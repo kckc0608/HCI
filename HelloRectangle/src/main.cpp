@@ -22,9 +22,14 @@ float vertices[] = {
 	-0.5f, -0.5f, 1.0f,  // 왼쪽 아래
 	+0.5f, -0.5f, 1.0f,  // 오른쪽 아래
 	-0.5f, +0.5f, 1.0f,  // 왼쪽 위     (여기까지 삼각형 1)
-	+0.5f, +0.5f, 1.0f,  // 오른쪽 위
-	+0.5f, -0.5f, 1.0f,  // 오른쪽 아래
-	-0.5f, +0.5f, 1.0f,  // 왼쪽 위     (여기까지 삼각형 2)  => (삼각형 2개로 사각형 생성)
+	+0.5f, +0.5f, 1.0f   // 오른쪽 위
+	//+0.5f, -0.5f, 1.0f,  // 오른쪽 아래
+	//-0.5f, +0.5f, 1.0f,  // 왼쪽 위     (여기까지 삼각형 2)  => (삼각형 2개로 사각형 생성)
+};
+
+int indices[] = {
+	0, 1, 2,
+	1, 2, 3
 };
 
 int main() {
@@ -51,19 +56,26 @@ int main() {
 	// Shader Program 생성
 	unsigned int shaderProgram = createShaderProgramWithShaders(vertexShader, fragmentShader);
 
+	// VAO 생성 (VBO, EBO는 이 VAO에 바인딩 되므로 먼저 생성해야 함. 안 그러면 삼각형이 안그려짐!)
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
 	// VBO 생성 후, 정점 데이터 복사
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// VAO 생성 후, vertex attribute 생성
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
+	// 정점 Attribute를 생성하고, VAO에 할당
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 	glEnableVertexAttribArray(0);
+
+	// EBO 생성 후, 인덱스 데이터 복사
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Redering Loop
 	while(!glfwWindowShouldClose(window)) {
@@ -73,8 +85,9 @@ int main() {
 
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawArrays(GL_TRIANGLES, 1, 3);
+		/*glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 1, 3);*/
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 
