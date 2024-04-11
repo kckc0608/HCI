@@ -1,0 +1,2 @@
+D:\Hongik Univ\3-1\HCI\수업 중 실습\OpenGL4_texture1\x64\Debug\OpenGL4 texture.exe
+D:\Hongik Univ\3-1\HCI\연습\HCI\HelloTexture\x64\Debug\OpenGL4 texture.exe
